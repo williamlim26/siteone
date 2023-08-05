@@ -1,7 +1,7 @@
 import Image from 'next/image'
 
 async function getPosts() {
-  const res = await fetch(`http://34.168.90.0/wp-json/wp/v2/posts`, { cache: 'no-store' })
+  const res = await fetch(`${process.env.WORDPRESS_API_URL}/wp-json/wp/v2/posts`, { cache: 'no-store' })
   const posts = await res.json()
  
   return posts
