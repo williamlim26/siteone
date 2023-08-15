@@ -1,4 +1,5 @@
 import NavBar from './navbar'
+import Link from 'next/link'
 
 interface Post {
   date: string
@@ -38,7 +39,7 @@ async function getPosts() {
     const regex = /<p>(.*?)<\/p>/g
     const matches = content.rendered.match(regex) || [];
 
-    let modifiedContent = matches.map((p: string) => (
+    const modifiedContent = matches.map((p: string) => (
       p.replace(/<\/?p>/g, '').replace(/target="_blank"/g, 'target="_blank" class="text-blue-500"')
     ));
 
@@ -61,24 +62,47 @@ export default async function Home() {
 
   console.log(posts[0])
 
+  const openPost = () => {
+    return <Link href="/dashboard">Dashboard</Link>
+  }
+
   return (
-    <main className="m-auto px-4 mt-16 min-h-screen relative max-w-2xl">
+    <main className="m-auto px-4 mt-16 min-h-screen relative max-w-5xl">
       <NavBar />
-      { posts.map(({ date, title, content, images}: MappedPost) =>
+      <div className="hidden sm:block">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
+          { posts.map(({ date, slug, title, content, images}: MappedPost) =>
+              <Link key={slug} className='h-80' href={`/posts/${slug}`}>
+                {images?.[0] && <div dangerouslySetInnerHTML={{ __html: images[0] }} /> }
+                <p>{title}</p>
+              </Link>
+            )
+          }
+        </div>
+      </div>
+      <div className="sm:hidden">
+        { posts.map(({ date, slug, title, content, images}: MappedPost) =>
+            <div key={slug} className='flex h-48 gap-2'>
+              {images?.[0] && <div className='flex-auto w-8' dangerouslySetInnerHTML={{ __html: images[0] }} /> }
+              <div className='flex-auto w-4'>{title}</div>
+            </div>
+          )
+        }
+      </div>
+      {/* { posts.map(({ date, slug, title, content, images}: MappedPost) =>
           <div key={date} className='space-y-4'>
+            <p>{slug}</p>
             <h1 className='text-6xl'>{title}</h1>
             {images?.length && images.map(
               (image, index) => <div key={index} dangerouslySetInnerHTML={{ __html: image }} />
             )}
             {content?.length && content.map(
               (paragraph, index) =>
-                <p key={index}>
-                  <div key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
-                </p>
+                <div key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
             )}
           </div>
         )
-      }
+      } */}
     </main>
   )
 }
