@@ -1,4 +1,3 @@
-import NavBar from './navbar'
 import Link from 'next/link'
 
 async function getPosts() {
@@ -13,11 +12,8 @@ async function getPosts() {
 
     const isPublished = status === 'publish'
 
-    const imgRegex = /<img(.*?)>/g
-    const images = content.rendered.match(imgRegex)
-
-    const regex = /<p>(.*?)<\/p>/g
-    const matches = content.rendered.match(regex) || [];
+    const regex = /<img[^>]*>|<p[^>]*>.*?<\/p>/g
+    const matches = content.rendered.match(regex)
 
     const modifiedContent = matches.map((p) => (
       p.replace(/<\/?p>/g, '').replace(/target="_blank"/g, 'target="_blank" class="text-blue-500"')
@@ -29,8 +25,7 @@ async function getPosts() {
         date,
         slug,
         title: title.rendered,
-        content: modifiedContent,
-        images
+        imgCover: modifiedContent.find(content => content.includes('img'))
       })
     }
     return mappedPosts
@@ -45,13 +40,13 @@ export default async function Home() {
     <main className="m-auto px-4 mt-24 min-h-screen max-w-5xl">
       <div className="hidden sm:block">
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
-          { posts.map(({ id, date, slug, title, content, images}) =>
+          { posts.map(({ id, slug, title, imgCover }) =>
               <Link
                 key={id}
                 className='h-80'
                 href={`/posts/${slug}`}
               >
-                {images?.[0] && <div dangerouslySetInnerHTML={{ __html: images[0] }} /> }
+                {imgCover && <div dangerouslySetInnerHTML={{ __html: imgCover }} /> }
                 <p>{title}</p>
               </Link>
             )
@@ -59,11 +54,13 @@ export default async function Home() {
         </div>
       </div>
       <div className="sm:hidden">
-        { posts.map(({ date, slug, title, content, images}) =>
-            <div key={slug} className='flex h-48 gap-2'>
-              {images?.[0] && <div className='flex-auto w-8' dangerouslySetInnerHTML={{ __html: images[0] }} /> }
-              <div className='flex-auto w-4'>{title}</div>
-            </div>
+        { posts.map(({ id, slug, title, imgCover }) =>
+            <Link key={id} href={`/posts/${slug}`}>
+              <div key={slug} className='flex h-48 gap-2'>
+                {imgCover && <div className='flex-auto w-8' dangerouslySetInnerHTML={{ __html: imgCover }} /> }
+                <div className='flex-auto w-4'>{title}</div>
+              </div>
+            </Link>
           )
         }
       </div>

@@ -9,11 +9,8 @@ const getPost = async (slug) => {
 
   const isPublished = status === 'publish'
 
-  const imgRegex = /<img(.*?)>/g
-  const images = content.rendered.match(imgRegex)
-
-  const regex = /<p>(.*?)<\/p>/g
-  const matches = content.rendered.match(regex) || [];
+  const regex = /<img[^>]*>|<p[^>]*>.*?<\/p>/g
+  const matches = content.rendered.match(regex)
 
   const modifiedContent = matches.map((p) => (
     p.replace(/<\/?p>/g, '').replace(/target="_blank"/g, 'target="_blank" class="text-blue-500"')
@@ -24,7 +21,6 @@ const getPost = async (slug) => {
       date,
       title: title.rendered,
       content: modifiedContent,
-      images
     }
   }
   return {}
@@ -38,9 +34,6 @@ const Posts = async ({ params }) => {
     <main className="m-auto px-4 mt-28 min-h-screen relative max-w-2xl">
       <div key={date} className='flex flex-col space-y-6'>
         <h1 className='text-6xl'>{title}</h1>
-        {images?.length && images.map(
-          (image, index) => <div key={index} dangerouslySetInnerHTML={{ __html: image }} />
-        )}
         {content?.length && content.map(
           (paragraph, index) =>
             <div key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
