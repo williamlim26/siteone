@@ -31,7 +31,7 @@ const Posts = async ({ params }) => {
   const { date, title, content, images } = await getPost(slug)
 
   return (
-    <main className="m-auto px-4 mt-28 min-h-screen relative max-w-2xl">
+    <main className="m-auto px-4 pb-20 mt-28 min-h-screen relative max-w-2xl">
       <div key={date} className='flex flex-col space-y-6'>
         <h1 className='text-6xl'>{title}</h1>
         {content?.length && content.map(

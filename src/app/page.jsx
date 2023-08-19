@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Script from 'next/script'
 
 async function getPosts() {
   const fields = ['id', 'date', 'title', 'slug', 'status', 'content.rendered']
@@ -64,11 +65,12 @@ export default async function Home() {
           )
         }
       </div>
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7588626076325542"
-        crossorigin="anonymous"></script>
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7588626076325542"
+        crossorigin="anonymous" />
       <ins
-        class="adsbygoogle"
-        style="display:block"
+        className="adsbygoogle display:block"
         data-ad-client="ca-pub-7588626076325542"
         data-ad-slot="7781895553"
         data-ad-format="auto"
