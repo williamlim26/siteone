@@ -21,10 +21,10 @@ export default function RootLayout({
         crossorigin="anonymous"
       />
       <body className={inter.className}>
-        <div className='relative'>
+        <main className='relative'>
           <NavBar />
           {children}
-        </div>
+        </main>
       </body>
     </html>
   )

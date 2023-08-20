@@ -1,10 +1,11 @@
 import Link from 'next/link'
-import Script from 'next/script'
 
-async function getPosts() {
+const getPosts = async (query) => {
   const fields = ['id', 'date', 'title', 'slug', 'status', 'content.rendered']
+
   const res = await fetch(
-    `${process.env.WORDPRESS_API_URL}/wp-json/wp/v2/posts?_fields=${fields.join(',')}`,
+    `${process.env.WORDPRESS_API_URL}/wp-json/wp/v2/posts?search=
+    ${query}&_fields=${fields.join(',')}`,
     { cache: 'no-store' })
   const posts = await res.json()
 
@@ -32,13 +33,24 @@ async function getPosts() {
     return mappedPosts
   }, [])
 }
- 
 
-export default async function Home() {
-  const posts = await getPosts()
+const Search = async ({
+  searchParams: { query }
+}) => {
+  const posts = await getPosts(query)
+
+  if (!Array.isArray(posts) || !posts.length) {
+    return (
+      <section className='m-auto px-4 pb-20 mt-16 min-h-screen relative max-w-2xl'>
+        <h1 className='py-6 text-3xl text-[#AAAAAA] font-bold'>{`Search posts for "${query}"`}</h1>
+        <h1 className='py-6 text-3xl font-bold'>No posts found</h1>
+      </section>
+    )
+  }
 
   return (
-    <section className="m-auto px-4 mt-24 min-h-screen max-w-5xl">
+    <section className='m-auto px-4 pb-20 mt-16 min-h-screen relative max-w-2xl'>
+      <h1 className='py-6 text-3xl text-[#AAAAAA] font-bold'>{`Search posts for "${query}"`}</h1>
       <div className="hidden sm:block">
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
           { posts.map(({ id, slug, title, imgCover }) =>
@@ -48,7 +60,7 @@ export default async function Home() {
                 href={`/posts/${slug}`}
               >
                 {imgCover && <div dangerouslySetInnerHTML={{ __html: imgCover }} /> }
-                <p dangerouslySetInnerHTML={{ __html: title }} />
+                <p>{title}</p>
               </Link>
             )
           }
@@ -65,19 +77,8 @@ export default async function Home() {
           )
         }
       </div>
-      <Script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7588626076325542"
-        crossorigin="anonymous" />
-      <ins
-        className="adsbygoogle display:block"
-        data-ad-client="ca-pub-7588626076325542"
-        data-ad-slot="7781895553"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-      <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
     </section>
   )
 }
+
+export default Search

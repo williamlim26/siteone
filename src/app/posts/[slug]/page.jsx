@@ -1,3 +1,5 @@
+import Script from 'next/script'
+
 const getPost = async (slug) => {
   const fields = ['date', 'title', 'status', 'content.rendered']
   const res = await fetch(
@@ -9,18 +11,19 @@ const getPost = async (slug) => {
 
   const isPublished = status === 'publish'
 
-  const regex = /<img[^>]*>|<p[^>]*>.*?<\/p>/g
-  const matches = content.rendered.match(regex)
+  // const regex = /<img[^>]*>|<p[^>]*>.*?<\/p>/g
+  // const regex = /[^\\]n/g
+  // const matches = content.rendered.match(regex)
 
-  const modifiedContent = matches.map((p) => (
-    p.replace(/<\/?p>/g, '').replace(/target="_blank"/g, 'target="_blank" class="text-blue-500"')
-  ))
+  // const modifiedContent = matches.map((p) => (
+  //   p.replace(/<\/?p>/g, '').replace(/target="_blank"/g, 'target="_blank" class="text-blue-500"')
+  // ))
 
   if (isPublished) {
     return {
       date,
       title: title.rendered,
-      content: modifiedContent,
+      content: content.rendered.split('\n').filter(e => e !== ''),
     }
   }
   return {}
@@ -28,12 +31,12 @@ const getPost = async (slug) => {
 
 const Posts = async ({ params }) => {
   const { slug } = params
-  const { date, title, content, images } = await getPost(slug)
+  const { date, title, content } = await getPost(slug)
 
   return (
     <main className="m-auto px-4 pb-20 mt-28 min-h-screen relative max-w-2xl">
       <div key={date} className='flex flex-col space-y-6'>
-        <h1 className='text-6xl'>{title}</h1>
+        <h1 className='text-6xl' dangerouslySetInnerHTML={{ __html: title }} />
         {content?.length && content.map(
           (paragraph, index) =>
             <div key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
