@@ -74,7 +74,7 @@ export default async function Home() {
         data-ad-client="ca-pub-7588626076325542"
         data-ad-slot="7781895553"
         data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
+        data-full-width-responsive="true" />
       <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
