@@ -85,7 +85,7 @@ const Navbar = () => {
 
   const links = [
     { name: 'News', url: '' },
-    { name: 'Hot', url: 'hot' },
+    // { name: 'Hot', url: 'hot' },
   ]
 
   return (
@@ -119,25 +119,28 @@ const Navbar = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </div> */}
-          <Link href={`/`}>
-            <Image
-              src='/images/logo.png'
-              alt='Your Kpop logo'
-              className="dark:invert"
-              width={150}
-              height={40}
-              priority
-            />
-          </Link>
-          {/* <div className='hidden md:flex gap-4'>
-            {links.map(({ name, url }) =>
-              <div key={`link-${name}-${url}`}>
-                <Link href={`/${url}`}>
-                  {name.toUpperCase()}
-                </Link>
-              </div>
-            )}
-          </div> */}
+          <div className='flex items-center gap-5'>
+            <Link href={`/`}>
+              <Image
+                src='/images/logo.png'
+                alt='Your Kpop logo'
+                className="dark:invert"
+                width={150}
+                height={40}
+                priority
+              />
+            </Link>
+            {/* <div className='hidden md:flex gap-4'> */}
+            <div>
+              {links.map(({ name, url }) =>
+                <div key={`link-${name}-${url}`}>
+                  <Link href={`/${url}`}>
+                    {name.toUpperCase()}
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
 
           {showSearchBar
             ? <div
