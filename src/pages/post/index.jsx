@@ -40,7 +40,7 @@ export default function Post({ date, title, content }) {
 // This function gets called at build time on server-side.
 // It won't be called on client-side, so you can even do
 // direct database queries.
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const sz = 'my-dearest-nearly-doubles-its-ratings-as-it-surges-to-new-all-time-high'
   const fields = ['date', 'title', 'status', 'content.rendered']
   const res = await fetch(

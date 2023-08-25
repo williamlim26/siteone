@@ -52,23 +52,6 @@ const Navbar = () => {
   const searchContainerRef = useRef(null)
   const inputRef = useRef(null)
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-        setShowSearchBar(false)
-      }
-    }
-
-    if (showSearchBar) {
-      document.addEventListener('click', handleClickOutside)
-      inputRef.current.focus()
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside)
-    };
-  }, [showSearchBar])
-
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleSearchClick()
@@ -76,10 +59,29 @@ const Navbar = () => {
   }
 
   const handleSearchClick = () => {
-    router.push(`/search?query=${searchValue}`)
-    setSearchValue('')
-    setShowSearchBar(false)
+    if (searchValue !== '') {
+      router.push(`/search?query=${searchValue}`)
+      setSearchValue('')
+      setShowSearchBar(false)
+    }
   }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the click is outside the search container
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setShowSearchBar(false);
+      }
+    };
+
+    // Add a mousedown event listener to the document
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []); // Run this effect only once when the component mounts
 
   const links = [
     { name: 'News', url: '' },
@@ -90,7 +92,8 @@ const Navbar = () => {
     <nav>
       <div
         className={`
-          p-4
+          px-4
+          py-3
           bg-[#52c4ff]
           z-20
           fixed
@@ -135,50 +138,55 @@ const Navbar = () => {
               </div>
             )}
           </div> */}
-          {/* <div onClick={() => setShowSearchBar(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-          </div> */}
+
+          {showSearchBar
+            ? <div
+                ref={searchContainerRef}
+                className={`
+                  py-1
+                  px-2
+                  flex
+                  items-center
+                  gap-2
+                  z-50
+                  bg-white
+                  w-60
+                  h-10
+                  rounded-lg
+                  text-black
+                `}
+              >
+                <div className='grow w-2'>
+                  <input
+                    type="text"
+                    id="searchQuery"
+                    name="searchQuery"
+                    ref={inputRef}
+                    className='focus:outline-none w-full'
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                </div>
+                <div className='flex-none w-6' onClick={handleSearchClick}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                </div>
+              </div>
+            : <div 
+              className='py-2 pr-2'
+              onClick={() => {
+                setShowSearchBar(true)
+                console.log('setShowSearchBar', showSearchBar)
+              }}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </div>
+          }
         </div>
       </div>
       {showDrawer && <Drawer />}
-      {showSearchBar &&
-        <div
-          ref={searchContainerRef}
-          className={`
-            p-2
-            flex
-            items-center
-            gap-2
-            fixed
-            top-3
-            right-4
-            z-30
-            bg-white
-            w-60
-            h-10
-            rounded-lg
-          `}
-        >
-          <div className='grow w-2'>
-            <input
-              type="text"
-              id="searchQuery"
-              name="searchQuery"
-              ref={inputRef}
-              className='focus:outline-none w-full'
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className='flex-none w-6' onClick={handleSearchClick}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-          </div>
-        </div>
-      }
     </nav>
   )
 }
