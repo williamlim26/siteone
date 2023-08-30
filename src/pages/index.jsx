@@ -67,7 +67,7 @@ export async function getServerSideProps() {
         .replace(/target="_blank"/g, 'target="_blank" class="text-blue-500"')
     )
 
-    if (isPublished) {
+    // if (isPublished) {
       mappedPosts.push({
         id,
         date,
@@ -75,7 +75,7 @@ export async function getServerSideProps() {
         title: title.rendered,
         imgCover: modifiedContent.find((content) => content.includes('img')),
       })
-    }
+    // }
 
     return mappedPosts
   }, [])

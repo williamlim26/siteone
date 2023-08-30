@@ -8,11 +8,26 @@ export default function Post({
   title = '',
   content = [],
 }) {
+  const imgSrc = content
+                    .find(element => element.includes('img'))
+                    .split(' ')
+                    .find(element => element.includes('src'))
+
+  let imgUrl = ''
+  if (imgSrc) {
+    const regex = /src="([^"]+)"/
+    const match = imgSrc.match(regex)
+    if (Array.isArray(match) && match.length) {
+      imgUrl = match[1]
+    }
+  }
   return (
     <>
       <Head>
         <title>{slug}</title>
         <meta property='og:title' content={slug} key='title' />
+        <meta property="og:description" content={title} />
+        {imgUrl && <meta property="og:image" content={imgUrl} />}
       </Head>
       <Layout>
         <section className='m-auto px-4 pb-20 mt-28 min-h-screen relative max-w-2xl'>
