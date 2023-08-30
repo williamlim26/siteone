@@ -33,7 +33,7 @@ export default function Post({
         <section className='m-auto px-4 pb-20 mt-28 min-h-screen relative max-w-2xl'>
           <div key={date} className='flex flex-col space-y-6'>
             <h1
-              className='text-6xl'
+              className='text-3xl font-bold lg:text-5xl'
               dangerouslySetInnerHTML={{ __html: title }}
             />
             {content?.length &&
