@@ -1,40 +1,25 @@
-import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import Layout from '@/components/Layout'
-
-const inter = Inter({ subsets: ['latin'] })
+import Image from 'next/image'
 
 export default function Home({ posts }) {
   return (
     <Layout>
       <section className='m-auto px-4 mt-24 min-h-screen max-w-5xl'>
-        <div className='hidden sm:block'>
-          <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-2'>
-            {posts.map(({ id, slug, title, imgCover }) => (
-              <Link key={id} className='h-80' href={`/post/${slug}`}>
-                {imgCover && (
-                  <div dangerouslySetInnerHTML={{ __html: imgCover }} />
-                )}
-                <p dangerouslySetInnerHTML={{ __html: title }} />
-              </Link>
-            ))}
-          </div>
-        </div>
-        <div className='sm:hidden'>
-          {posts.map(({ id, slug, title, imgCover }) => (
-            <Link key={id} href={`/post/${slug}`}>
-              <div key={slug} className='flex h-48 gap-2'>
-                {imgCover && (
-                  <div
-                    className='flex-auto w-8'
-                    dangerouslySetInnerHTML={{ __html: imgCover }}
+        <div className='grid sm:grid-cols-2 md:grid-cols-3 gap-2'>
+          {posts.map(({ id, slug, title, imgUrl }) => (
+            <Link key={id} className='h-80' href={`/post/${slug}`}>
+              {imgUrl && (
+                <div className='h-60 relative'>
+                  <Image
+                    src={imgUrl}
+                    alt={`${slug}-img`}
+                    layout='fill'
+                    objectFit='cover'
                   />
-                )}
-                <div
-                  className='flex-auto w-4'
-                  dangerouslySetInnerHTML={{ __html: title }}
-                />
-              </div>
+                </div>
+              )}
+              <p className='pt-2' dangerouslySetInnerHTML={{ __html: title }} />
             </Link>
           ))}
         </div>
@@ -53,32 +38,37 @@ export async function getServerSideProps() {
   )
   const posts = await res.json()
 
-  const data = posts.reduce((mappedPosts, post) => {
-    const { id, date, slug, status, title, content } = post
-
-    const isPublished = status === 'publish'
+  const data = posts.map((post) => {
+    const { id, date, slug, title, content } = post
 
     const regex = /<img[^>]*>|<p[^>]*>.*?<\/p>/g
     const matches = content.rendered.match(regex)
 
-    const modifiedContent = matches.map((p) =>
-      p
+    const modifiedContent = matches.map((element) =>
+      element
         .replace(/<\/?p>/g, '')
         .replace(/target="_blank"/g, 'target="_blank" class="text-blue-500"')
     )
 
-    // if (isPublished) {
-      mappedPosts.push({
-        id,
-        date,
-        slug,
-        title: title.rendered,
-        imgCover: modifiedContent.find((content) => content.includes('img')),
-      })
-    // }
+    const imgSrc = modifiedContent.find((element) => element.includes('img'))
 
-    return mappedPosts
-  }, [])
+    let imgUrl = ''
+    if (imgSrc) {
+      const regex = /src="([^"]+)"/
+      const match = imgSrc.match(regex)
+      if (Array.isArray(match) && match.length) {
+        imgUrl = match[1]
+      }
+    }
+
+    return {
+      id,
+      date,
+      slug,
+      title: title.rendered,
+      imgUrl,
+    }
+  })
 
   return {
     props: {

@@ -72,21 +72,14 @@ export async function getServerSideProps({ params }) {
   )
   const posts = await res.json()
 
-  const { date, status, title, content } = posts[0]
+  const { date, title, content } = posts[0]
 
-  const isPublished = status === 'publish'
-
-  if (isPublished) {
-    return {
-      props: {
-        slug,
-        date,
-        title: title.rendered,
-        content: content.rendered.split('\n').filter((e) => e !== ''),
-      },
-    }
-  }
   return {
-    props: {},
+    props: {
+      slug,
+      date,
+      title: title.rendered,
+      content: content.rendered.split('\n').filter((e) => e !== ''),
+    },
   }
 }
